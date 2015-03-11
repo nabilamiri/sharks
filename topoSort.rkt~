@@ -13,8 +13,9 @@
 ;else 
 ;    return L (a topologically sorted order)
 (define (topoSort a)
-    (if (empty? a #f) ;base case
-        (cons (caar a)) ((topoSort (cdar a) )      ;recursive case which is not done
+  (define ('())
+    
+  
   
   
   )
