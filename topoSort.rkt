@@ -22,38 +22,44 @@
 
 ;check if element a list L contains an element
 (define (contains a L)
+  (if(null? L) #f
   (if (eqv? (car L) a) #t
-     (if(null? (cdr L)) #f (contains (cdr L) a))
+     (if(null? (cdr L)) #f (contains a (cdr L)))
    )
+  )
 )
 
 ;check if vertex a in graph G has indegree greater than 0
 (define (indegree a G)
-  (if(contains  a (car G)) #t
-     (if(null? (cdr G)) #f (contains a (cdr G)))
+  (if(contains a (cdar G)) #t ;ignore vertext (head)
+     (if(null? (cdr G)) #f (indegree a (cdr G)))
     )
 )
 ;remove an element from G
 (define (remove a G)
   (if (null? G)
       '()
-      (if (eqv? a (car G))
+      (if (eqv? a (caar G))
           (remove a (cdr G))
           (cons (car G)
                 (remove a (cdr G))))))
 
 ;get next vertex to remove
 (define (getnext G)
-  (if(null? G) null ;reached end -> cycle
-     (if (indegree car(car G)) ;if head of list has no indegree, return it
-         (getnext(cdr G))
-         (car(car G)))
-))
+  (define nextlist (append (cdr G) (list(car G))))
+  (if(null? G) null
+     (if (indegree (caar G) G) ;check first vertex
+         (getnext nextlist)
+         (caar G)))
+)
 
 ;topoSort function
 (define (topoSort G)
   (if(empty? G) null ;base case
-      (if (eqv? (getnext G) null) "Has at least one cycle." ;cyclic
-               (cons (getnext G) topoSort(remove (getnext G)))
-  ))
+      (if (null? (getnext G))
+          "Has at least one cycle." ;cyclic
+          (cons (getnext G) (topoSort( remove (getnext G) G)) )
+      )
+   )
 )
+
